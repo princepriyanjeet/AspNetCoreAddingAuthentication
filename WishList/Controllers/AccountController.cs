@@ -27,6 +27,43 @@ namespace WishList.Controllers
 
         [HttpGet]
         [AllowAnonymous]
+        public IActionResult Login()
+        {
+            return View("Login");
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public IActionResult Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var Result = _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false).Result;
+                if (!Result.Succeeded)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    return View("Login", model);
+                }
+                
+            }
+            else
+            {
+                return View("Login", model);
+            }
+            return RedirectToAction("Index","Item");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Logout()
+        {
+            _signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View("Register");
